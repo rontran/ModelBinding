@@ -1,0 +1,15 @@
+﻿@model SectionVM
+
+<Section>
+    <div class="row" style="margin-top:50px;">
+        <div class="panel panel-default">
+            <div class="panel-heading">@Model.Label</div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @Html.HiddenFor(m => m.ControlType)
+                    @Html.DisplayFor(m => Model.Controls)
+                </div>
+            </div>
+        </div>
+    </div>
+</Section>

@@ -1,0 +1,6 @@
+﻿@model ButtonVM
+
+<ButtonGroup>
+    @Html.HiddenFor(m => m.ControlType)
+    @Html.TextBoxFor(m => m.Label, new { @class = "form-control btn btn-primary",type="button" })
+</ButtonGroup>

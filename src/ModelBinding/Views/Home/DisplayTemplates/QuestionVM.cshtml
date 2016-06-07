@@ -1,0 +1,9 @@
+﻿@model QuestionVM
+
+
+<Question class="col-md-3 ">
+    @Html.HiddenFor(m => m.ControlType)
+    @Html.LabelFor(m => m.Id, Model.Label, new { @class = "control-label " })
+    @Html.TextBoxFor(m => m.Answer, new { @class = "form-control @requiretype" })
+
+</Question>

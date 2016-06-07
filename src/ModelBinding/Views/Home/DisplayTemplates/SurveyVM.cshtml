@@ -1,0 +1,12 @@
+﻿@model SurveyVM
+
+@using (Html.BeginForm()) {
+    <div class="row">
+        <input type="submit" value="Save" class="btn btn-primary" />
+    </div>
+    <Survey>
+        @Html.HiddenFor(m=>m.ControlType)
+        @Html.DisplayFor(m => Model.Controls)
+
+    </Survey>
+}
