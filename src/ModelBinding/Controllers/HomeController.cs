@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using ModelBinding.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using ModelBinding.Models.Interfaces;
-using System.Reflection;
 
 namespace ModelBinding.Controllers
 {
@@ -30,7 +28,6 @@ namespace ModelBinding.Controllers
             section2.Controls.Add(new QuestionVM() { Label = "Question8" });
             section.Controls.Add(section2);
 
-
             return View(survey);
         }
 
@@ -39,7 +36,6 @@ namespace ModelBinding.Controllers
             var id = survey.Id;
             return View(survey);
         }
-
 
         public class MyModelBinderProvider : IModelBinderProvider
         {
@@ -70,9 +66,7 @@ namespace ModelBinding.Controllers
 
                 return new MessageModelBinder(context.MetadataProvider, binders);
             }
-
         }
-
 
         public class MessageModelBinder : IModelBinder
         {

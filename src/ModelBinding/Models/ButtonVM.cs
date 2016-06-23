@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace ModelBinding.Models
+﻿namespace ModelBinding.Models
 {
     public class ButtonVM:BaseVM
     {
@@ -13,7 +8,6 @@ namespace ModelBinding.Models
             {
                 return this.GetType().FullName;
             }
-
         }
     }
 }
