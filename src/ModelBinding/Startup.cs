@@ -33,15 +33,11 @@ namespace ModelBinding
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-          
-
-            
             services.AddMvc().Services.Configure<MvcOptions>(options => {
                 options.ModelBinderProviders.Insert(0, new MyModelBinderProvider());
             });
 
             // Add application services.
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,7 +49,6 @@ namespace ModelBinding
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
                 app.UseBrowserLink();
             }
             else
@@ -63,10 +58,7 @@ namespace ModelBinding
 
             app.UseStaticFiles();
 
-            
-
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

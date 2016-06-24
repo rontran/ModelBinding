@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using ModelBinding.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using ModelBinding.Models;
 using ModelBinding.Models.Interfaces;
-using System.Reflection;
 
 namespace ModelBinding.Controllers
 {
@@ -30,7 +29,6 @@ namespace ModelBinding.Controllers
             section2.Controls.Add(new QuestionVM() { Label = "Question8" });
             section.Controls.Add(section2);
 
-
             return View(survey);
         }
 
@@ -40,7 +38,6 @@ namespace ModelBinding.Controllers
             return View(survey);
         }
 
-
         public class MyModelBinderProvider : IModelBinderProvider
         {
             public IModelBinder GetBinder(ModelBinderProviderContext context) {
@@ -48,7 +45,8 @@ namespace ModelBinding.Controllers
                     throw new ArgumentNullException(nameof(context));
                 }
 
-                if (typeof(IControl).IsAssignableFrom(context.Metadata.ModelType)==false) {
+                if (context.Metadata.ModelType != typeof(IControl))
+                {
                     return null;
                 }
 
@@ -59,7 +57,12 @@ namespace ModelBinding.Controllers
                         continue;
                     }
 
-                    if (!(typeInfo.IsClass || typeInfo.IsPublic)) {
+                    if (!(typeInfo.IsClass && typeInfo.IsPublic)) {
+                        continue;
+                    }
+
+                    if (!typeof(IControl).IsAssignableFrom(type))
+                    {
                         continue;
                     }
 
@@ -70,9 +73,7 @@ namespace ModelBinding.Controllers
 
                 return new MessageModelBinder(context.MetadataProvider, binders);
             }
-
         }
-
 
         public class MessageModelBinder : IModelBinder
         {
@@ -86,31 +87,38 @@ namespace ModelBinding.Controllers
                 _binders = binders;
             }
 
-            public Task BindModelAsync(ModelBindingContext bindingContext) {
-                // Should probably prefix the value name (messageType) with the current ModelName.
-                var messageTypeResult = bindingContext.ValueProvider.GetValue("ControlType");
-                if (messageTypeResult == ValueProviderResult.None) {
-                    bindingContext.Result = ModelBindingResult.Failed(bindingContext.ModelName);
-                    return Task.FromResult(0);
+            public async Task BindModelAsync(ModelBindingContext bindingContext)
+            {
+                var controlTypeModelName = ModelNames.CreatePropertyModelName(bindingContext.ModelName, "ControlType");
+                var controlTypeResult = bindingContext.ValueProvider.GetValue(controlTypeModelName);
+                if (controlTypeResult == ValueProviderResult.None) {
+                    bindingContext.Result = ModelBindingResult.Failed();
+                    return;
                 }
 
                 IModelBinder binder;
-                if (!_binders.TryGetValue(messageTypeResult.FirstValue, out binder)) {
-                    bindingContext.Result = ModelBindingResult.Failed(bindingContext.ModelName);
-                    return Task.FromResult(0);
+                if (!_binders.TryGetValue(controlTypeResult.FirstValue, out binder))
+                {
+                    bindingContext.Result = ModelBindingResult.Failed();
+                    return;
                 }
 
                 // Now know the type exists in the assembly.
-                var type = Type.GetType(messageTypeResult.FirstValue);
+                var type = Type.GetType(controlTypeResult.FirstValue);
                 var metadata = _metadataProvider.GetMetadataForType(type);
 
+                ModelBindingResult result;
                 using (bindingContext.EnterNestedScope(
                     metadata,
                     bindingContext.FieldName,
                     bindingContext.ModelName,
-                    model: null)) {
-                    return binder.BindModelAsync(bindingContext);
+                    model: null))
+                {
+                    await binder.BindModelAsync(bindingContext);
+                    result = bindingContext.Result;
                 }
+
+                bindingContext.Result = result;
             }
         }
     }

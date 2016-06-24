@@ -2,5 +2,6 @@
 
 <ButtonGroup>
     @Html.HiddenFor(m => m.ControlType)
+    @Html.HiddenFor(m => m.Id)
     @Html.TextBoxFor(m => m.Label, new { @class = "form-control btn btn-primary",type="button" })
 </ButtonGroup>
